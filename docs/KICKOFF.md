@@ -2,13 +2,16 @@
 
 只交 PPT（5–7 分钟），代码只是用来跑出图和表。Python 3.13 + ultralytics YOLOv8n（CPU），不训练、不做界面。
 
+仓库：https://github.com/qin-zhenbang/YoloPedestrian-Det（main 分支，骨架已推送）。
+
 ## 项目结构
 
 ```
 YoloPedestrian-Det/
+├── .gitignore               排除 venv/、*.pt、IDE 配置
 ├── docs/KICKOFF.md          本文档
 ├── configs/exp.yaml         所有参数：模型、conf、iou、imgsz、场景分组
-├── weights/                 yolov8n.pt / yolov8s.pt（预置，免得现场联网）
+├── weights/                 yolov8n.pt 已随仓库分发
 ├── data/
 │   ├── samples/             测试图，按 day/night/occlusion/crowd/small 分目录
 │   └── labels.csv           每张图的人工人数真值
@@ -20,7 +23,8 @@ YoloPedestrian-Det/
 │   ├── figures/             直接拖进 PPT 的图
 │   ├── tables/              直接粘进 PPT 的表
 │   └── detection_samples/   画框后的单图
-└── requirements.txt         版本锁定，自己重跑用
+├── venv/                    本地环境，不进仓库；用 requirements.txt 重建
+└── requirements.txt         版本锁定（含 CPU 版 torch 源），换机器重建用
 ```
 
 三个脚本够了：detector 出结果，evaluate 出数字，visualize 出图。参数只从 `exp.yaml` 读，别在代码里写死。
@@ -34,7 +38,7 @@ YoloPedestrian-Det/
 | ID | 事 | 谁 | 做完拿到什么 |
 | --- | --- | --- | --- |
 | T001 | 建 venv、装依赖、锁版本 | A | `venv/`、`requirements.txt` |
-| T002 | 下载并预置两个权重 | A | `weights/yolov8n.pt`、`yolov8s.pt` |
+| T002 | 下载并预置 yolov8n.pt | A | `weights/yolov8n.pt`（已随仓库分发） |
 | T003 | 跑通单图推理 | B | 一张画框图 + 一次耗时 |
 | T004 | 定计时口径（预热 + 中位数） | B | `exp.yaml` 里的 warmup / repeat |
 
@@ -63,7 +67,7 @@ YoloPedestrian-Det/
 | --- | --- | --- | --- |
 | T014 | 检出 / 误检 / 漏检统计函数 | B | `evaluate.py` |
 | T015 | 阈值扫描 0.05–0.90 步进 0.05 | B | `threshold_sweep.csv`（18 档） |
-| T016 | n vs s 延迟对比 | B | `model_benchmark.csv` |
+| T016 | 自测 n 的 CPU 耗时，s 引官方数据 | B | `model_benchmark.csv` |
 | T017 | 五场景漏检统计 | B | `scene_breakdown.csv` |
 | T018 | 三份 CSV 抽样人眼复核 | A + B | 复核记录 |
 | T019 | 写指标口径说明（PPT 脚注） | B | `docs/metrics_note.md` |
@@ -94,3 +98,5 @@ YoloPedestrian-Det/
 | T034 | 最终数字复核 | 负责人 | 每个数字说得出来源 |
 
 S2 / S3（B 线）卡着后面所有出图和装订，优先给人。老师若明确要求训练，再插三件事：整数据、CPU 微调 10–20 epoch、把曲线放进 PPT。
+
+进度：T001、T002 已完成（venv + requirements.txt + yolov8n.pt）；T003 起未开始，任务待认领。

@@ -5,6 +5,7 @@ venv/
 __pycache__/
 *.py[cod]
 *.pt
+!weights/yolov8n.pt
 *.onnx
 runs/
 .DS_Store
