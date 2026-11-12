@@ -1,0 +1,11 @@
+venv/
+.workbuddy/
+.idea/
+.vscode/
+__pycache__/
+*.py[cod]
+*.pt
+*.onnx
+runs/
+.DS_Store
+Thumbs.db
