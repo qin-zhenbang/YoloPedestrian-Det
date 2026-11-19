@@ -53,12 +53,15 @@ def load_model(cfg: dict[str, Any]) -> YOLO:
     return YOLO(str(weights))
 
 
-def _predict_kwargs(cfg: dict[str, Any]) -> dict[str, Any]:
-    """把 exp.yaml 的 model 段翻译成 ultralytics 的推理参数。"""
+def _predict_kwargs(cfg: dict[str, Any], conf: float | None = None) -> dict[str, Any]:
+    """把 exp.yaml 的 model 段翻译成 ultralytics 的推理参数。
+
+    conf 传 None 时用配置里的基线阈值；阈值扫描时由调用方覆盖。
+    """
     m = cfg["model"]
     return {
         "imgsz": int(m["imgsz"]),
-        "conf": float(m["conf"]),
+        "conf": float(m["conf"] if conf is None else conf),
         "iou": float(m["iou"]),
         "classes": list(m["classes"]),
         "device": m["device"],
@@ -66,8 +69,10 @@ def _predict_kwargs(cfg: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _predict(model: YOLO, source: Any, cfg: dict[str, Any]) -> list[Any]:
-    return model.predict(source=source, **_predict_kwargs(cfg))
+def _predict(
+    model: YOLO, source: Any, cfg: dict[str, Any], conf: float | None = None
+) -> list[Any]:
+    return model.predict(source=source, **_predict_kwargs(cfg, conf))
 
 
 def _to_detections(result: Any) -> list[Detection]:
@@ -89,21 +94,24 @@ def _to_detections(result: Any) -> list[Detection]:
 
 
 def detect_image(
-    model: YOLO, image_path: str | Path, cfg: dict[str, Any]
+    model: YOLO, image_path: str | Path, cfg: dict[str, Any], conf: float | None = None
 ) -> list[Detection]:
     """对单张图片推理，只保留配置中的类别（person=0），返回检测框列表。"""
-    return _to_detections(_predict(model, str(image_path), cfg)[0])
+    return _to_detections(_predict(model, str(image_path), cfg, conf)[0])
 
 
 def detect_batch(
-    model: YOLO, image_paths: Sequence[str | Path], cfg: dict[str, Any]
+    model: YOLO,
+    image_paths: Sequence[str | Path],
+    cfg: dict[str, Any],
+    conf: float | None = None,
 ) -> dict[str, list[Detection]]:
     """批量推理，返回 {图片路径: 检测框列表}。
 
     逐张调用单图推理而不是把多张图塞进一个 tensor：ultralytics 批量推理会强制
     rect=False（方形补边），检测结果与单图 rect=True 不一致，会污染后续统计。
     """
-    return {str(path): detect_image(model, path, cfg) for path in image_paths}
+    return {str(path): detect_image(model, path, cfg, conf) for path in image_paths}
 
 
 def benchmark_latency(
