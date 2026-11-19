@@ -1,1 +1,41 @@
 ﻿image_id,scene,person_count,note
+day_001.jpg,day,4,空中滑雪者1人+地面3人
+day_002.jpg,day,5,草地儿童5人
+day_003.jpg,day,4,前景2名女孩+背景成人2人
+day_004.jpg,day,4,黄昏草地持飞盘4人
+day_005.jpg,day,5,长椅阅读者+站立者+坐者+右缘部分出画者
+day_006.jpg,day,5,骑手1人+背景4人
+day_007.jpg,day,5,雪堆后远处行走5人
+day_008.jpg,day,5,新人2人+右侧宾客3人
+night_001.jpg,night,4,桥下河岸4人
+night_002.jpg,night,4,雕像旁真人4名 雕像不计
+night_003.jpg,night,1,夜户外进食1人
+night_004.jpg,night,3,路灯下3人 远处1人较小
+night_005.jpg,night,15,滑板场选手1人+观众14人 边缘部分遮挡 计数±2
+night_006.jpg,night,1,泛光灯下网球1人
+night_007.jpg,night,160,看台密集观众约150人+场内与前景约10人 估算±20
+night_008.jpg,night,11,滨水岸边人群11人
+occlusion_001.jpg,occlusion,2,跑垒者前后重叠2人
+occlusion_002.jpg,occlusion,12,网球场儿童12人 相互遮挡
+occlusion_003.jpg,occlusion,6,柜台前后6人
+occlusion_004.jpg,occlusion,8,前排女子遮挡后排 共8人
+occlusion_005.jpg,occlusion,2,男子抱婴儿 马头遮挡
+occlusion_006.jpg,occlusion,2,下半身被雕塑遮挡2人
+occlusion_007.jpg,occlusion,3,滑雪者3人 旗门杆遮挡
+occlusion_008.jpg,occlusion,3,船上儿童3人 索具遮挡
+crowd_001.jpg,crowd,38,黑白学校合影逐排计数 ±2
+crowd_002.jpg,crowd,24,剪彩仪式密集人群 计数±3
+crowd_003.jpg,crowd,26,公园散布人群含远处行人 计数±3
+crowd_004.jpg,crowd,29,马车游行含乘客与远处行人 计数±3
+crowd_005.jpg,crowd,165,百人学校合影逐排计数 ±10
+crowd_006.jpg,crowd,46,室内餐厅就座人群 遮挡较多 计数±5
+crowd_007.jpg,crowd,30,雪场半管选手2人+观众列队28人 计数±3
+crowd_008.jpg,crowd,18,室内排球 场上与场边共18人
+small_001.jpg,small,5,桥与飞机旁极小行人5人
+small_002.jpg,small,10,海滩骑者+背景极小行人共10人
+small_003.jpg,small,6,飞机旁极小地勤6人
+small_004.jpg,small,3,码头边极小行人3人
+small_005.jpg,small,9,护柱后远处极小人9人
+small_006.jpg,small,3,街道杆后远处极小人3人
+small_007.jpg,small,11,雪坡远处滑雪者11人
+small_008.jpg,small,6,海滩背景极小行人6人

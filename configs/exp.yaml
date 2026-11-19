@@ -1,0 +1,32 @@
+# 实验参数唯一来源：detector / evaluate / visualize 只从这里读，代码里不写死。
+# T004 冻结后不再改，后面所有实验只读它。
+
+model:
+  weights: weights/yolov8n.pt
+  device: cpu                # 本机无 NVIDIA GPU，全程 CPU
+  imgsz: 640                 # 对齐官方 COCO val / 640 口径，便于引用对照
+  classes: [0]               # COCO 第 0 类 = person，只留行人框
+  conf: 0.25                 # ultralytics 默认置信度阈值，作基线
+  iou: 0.70                  # ultralytics 默认 NMS 阈值
+
+data:
+  samples_dir: data/samples
+  labels_csv: data/labels.csv
+  scenes: [day, night, occlusion, crowd, small]  # 目录名即场景名，顺序即图表顺序
+
+threshold_sweep:             # T010：0.05–0.90 步进 0.05，共 18 档
+  start: 0.05
+  stop: 0.90
+  step: 0.05
+
+timing:                      # T011 计时口径：只计模型本身，不含读图 / 画框 / 写 CSV
+  include: [preprocess, inference, postprocess]  # 取 results[0].speed 这三项之和（毫秒/张）
+  warmup: 3                  # 前 3 张预热不计：首张含初始化，明显偏慢
+  repeats: 20                # 正式计时 20 张
+  statistic: mean            # 汇总取平均，全程只用这一种
+  threads: 1                 # 固定 torch 单线程，排除多核调度波动，数字可复现
+
+official:                    # 官方表数据，仅作对照引用，不是自测结果（T020 核对出处）
+  source: https://docs.ultralytics.com/models/yolov8/
+  protocol: COCO val, imgsz=640, CPU ONNX
+  yolov8s_cpu_ms: 128.4      # T017 对照用：官方 s 的 CPU 耗时
