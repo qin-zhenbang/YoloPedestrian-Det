@@ -1,12 +1,12 @@
 """可视化：统一的图表风格与检测框绘制。
 
-T014 先定风格并产出 results/detection_samples/ 的画框图；
-T015 之后的四宫格、阈值曲线、耗时图、场景柱状图都复用这里的 PALETTE 与 apply_style()。
+统一图表风格，并产出 results/detection_samples/ 的画框图；
+四宫格、阈值曲线、耗时图、场景柱状图都复用这里的 PALETTE 与 apply_style()。
 """
 
 # 文件分三块：
 # 1. 风格与字体：PALETTE 配色、apply_style（matplotlib）、_load_font（PIL 画框用）；
-# 2. 画框图：draw_boxes，以及 5 张样图 / 8 张失败案例；
+# 2. 画框图：draw_boxes，以及 5 张样图 / 7 张失败案例；
 # 3. 统计图：四宫格、阈值双线图、耗时对比图、场景漏检柱状图。
 # 统计图都直接读 results/tables 下的 CSV，保证图里的数字和表完全一致。
 
@@ -69,7 +69,7 @@ SCENE_CN = {
     "small": "远小",
 }
 
-# 失败案例：前 6 张以漏检为主，后 2 张以误检为主。
+# 失败案例：前 6 张以漏检为主，最后 1 张以误检为主。
 FAILURE_IMAGES = [
     "crowd_005.jpg",
     "night_007.jpg",
@@ -78,7 +78,6 @@ FAILURE_IMAGES = [
     "small_008.jpg",
     "small_007.jpg",
     "occlusion_008.jpg",
-    "day_005.jpg",
 ]
 
 _FONT_CANDIDATES = [
@@ -221,7 +220,7 @@ def render_samples(
 
     counts: dict[str, int] = {}
     for image_id in sample_ids:
-        # 每张图单独推理 + 画框，文件名固定为 {图片名}_pred.png，方便 PPT 引用。
+        # 每张图单独推理 + 画框，文件名固定为 {图片名}_pred.png，方便报告/README 引用。
         detections = detect_image(model, index[image_id], cfg)
         image = draw_boxes(index[image_id], detections)
         save_path = out_dir / f"{Path(image_id).stem}_pred.png"
@@ -492,7 +491,7 @@ if __name__ == "__main__":
     cfg = load_config()
     model = load_model(cfg)
     render_samples(model, cfg)          # 5 张场景样图
-    render_failure_cases(model, cfg)    # 8 张失败案例
+    render_failure_cases(model, cfg)    # 7 张失败案例
     make_grid_overview(model, cfg)      # 2×2 四宫格
     plot_threshold_curve(cfg)           # 阈值双线图
     plot_latency_compare()              # CPU 耗时对比

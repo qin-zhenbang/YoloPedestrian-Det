@@ -49,7 +49,7 @@ Linux / macOS 把激活命令换成 `source venv/bin/activate` 即可。
 - `results/tables/scene_breakdown.csv`：五场景检出 / 误检 / 漏检
 - `results/tables/model_benchmark.csv`：本机 yolov8n 耗时 + 官方 yolov8s 参照
 - `results/figures/`：四宫格、阈值双线图、耗时对比图、场景漏检柱状图
-- `results/detection_samples/`：5 张场景样图 + 8 张失败案例
+- `results/detection_samples/`：5 张场景样图 + 7 张失败案例
 
 ## 项目结构
 
@@ -64,9 +64,7 @@ YoloPedestrian-Det/
 │   ├── labels.csv            # 每张图的人工人数真值
 │   └── SOURCES.md            # 图片来源与逐图 URL 登记
 ├── docs/
-│   ├── KICKOFF.md            # 任务拆解与进度
 │   ├── metrics_note.md       # 指标口径、复核记录与引用注意
-│   ├── figure_check.md       # 图件乱码 / 裁剪检查记录
 │   └── references.md         # 官方数据、COCO、YOLOv8 引用清单
 ├── results/
 │   ├── figures/
@@ -137,9 +135,7 @@ YoloPedestrian-Det/
 
 | 文档 | 内容 |
 |---|---|
-| [docs/KICKOFF.md](docs/KICKOFF.md) | 任务拆解、进度与交付说明 |
 | [docs/metrics_note.md](docs/metrics_note.md) | 指标定义、复核记录、引用注意 |
-| [docs/figure_check.md](docs/figure_check.md) | 图件乱码与裁剪检查 |
 | [docs/references.md](docs/references.md) | 官方数据、COCO、YOLOv8 引用清单 |
 | [data/SOURCES.md](data/SOURCES.md) | 40 张图片的逐图来源与 URL |
 | [data/labels.csv](data/labels.csv) | 每张图的人工人数真值 |
