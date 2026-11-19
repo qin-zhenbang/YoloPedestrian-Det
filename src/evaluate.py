@@ -10,13 +10,22 @@
 """
 
 import csv
+import platform
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
 
-from detector import Detection, detect_batch, load_config, load_model
+from detector import (
+    Detection,
+    SpeedStats,
+    benchmark_latency,
+    detect_batch,
+    load_config,
+    load_model,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+TABLES_DIR = PROJECT_ROOT / "results" / "tables"
 
 
 @dataclass(frozen=True)
@@ -162,6 +171,107 @@ def evaluate(
     return rows_from_detections(detections, labels)
 
 
+def threshold_grid(cfg: dict) -> list[float]:
+    """按 exp.yaml 的 threshold_sweep 生成含起止值的阈值序列。"""
+    t = cfg["threshold_sweep"]
+    start, stop, step = float(t["start"]), float(t["stop"]), float(t["step"])
+    n = int(round((stop - start) / step)) + 1
+    return [round(start + i * step, 2) for i in range(n)]
+
+
+def sweep_thresholds(
+    model,
+    cfg: dict,
+    image_paths: Sequence[str | Path] | None = None,
+) -> list[tuple[float, Metrics]]:
+    """在最低阈值推理一次，再逐档过滤检测框并汇总，返回 [(阈值, 指标)]。"""
+    thresholds = threshold_grid(cfg)
+    detections = run_detections(model, cfg, image_paths, conf=min(thresholds))
+    labels = load_labels(cfg)
+    return [
+        (thr, summarize(rows_from_detections(detections, labels, thr)))
+        for thr in thresholds
+    ]
+
+
+def write_threshold_sweep(
+    sweep: Iterable[tuple[float, Metrics]],
+    path: str | Path = TABLES_DIR / "threshold_sweep.csv",
+) -> Path:
+    """写 threshold_sweep.csv，比率保留 4 位小数。"""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(
+            ["threshold", "n_images", "gt", "det", "tp", "fp", "fn",
+             "recall", "precision", "miss_rate", "fp_rate"]
+        )
+        for thr, m in sweep:
+            writer.writerow(
+                [f"{thr:.2f}", m.n_images, m.gt, m.det, m.tp, m.fp, m.fn,
+                 f"{m.recall:.4f}", f"{m.precision:.4f}",
+                 f"{m.miss_rate:.4f}", f"{m.fp_rate:.4f}"]
+            )
+    return path
+
+
+def write_model_benchmark(
+    cfg: dict,
+    stats: SpeedStats,
+    path: str | Path = TABLES_DIR / "model_benchmark.csv",
+) -> Path:
+    """写 model_benchmark.csv：本机 yolov8n 自测 + 官方 yolov8s 参照。"""
+    m = cfg["model"]
+    official = cfg["official"]
+    model_name = Path(m["weights"]).stem
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(
+            ["model", "source", "device", "imgsz", "n_images", "warmup",
+             "preprocess_ms", "inference_ms", "postprocess_ms", "total_ms", "note"]
+        )
+        writer.writerow(
+            [model_name, "self", "CPU", m["imgsz"], stats.n_images, stats.warmup,
+             f"{stats.preprocess_ms:.1f}", f"{stats.inference_ms:.1f}",
+             f"{stats.postprocess_ms:.1f}", f"{stats.total_ms:.1f}",
+             f"本机 PyTorch CPU 单线程、{stats.n_images} 张均值；"
+             f"CPU: {platform.processor()}"]
+        )
+        writer.writerow(
+            ["yolov8s", "official", "CPU", 640, "", "", "", "", "",
+             f"{official['yolov8s_cpu_ms']:.1f}",
+             f"官方 {official['protocol']}，非本机自测；"
+             f"来源 {official['source']}；口径不同仅作对照"]
+        )
+    return path
+
+
+def write_scene_breakdown(
+    rows: Iterable[ImageStats],
+    path: str | Path = TABLES_DIR / "scene_breakdown.csv",
+) -> Path:
+    """写 scene_breakdown.csv：按场景汇总检出/误检/漏检，比率保留 4 位小数。"""
+    by_scene = summarize_by_scene(rows)
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(
+            ["scene", "n_images", "gt", "det", "tp", "fp", "fn",
+             "recall", "precision", "miss_rate", "fp_rate"]
+        )
+        for scene, m in by_scene.items():
+            writer.writerow(
+                [scene, m.n_images, m.gt, m.det, m.tp, m.fp, m.fn,
+                 f"{m.recall:.4f}", f"{m.precision:.4f}",
+                 f"{m.miss_rate:.4f}", f"{m.fp_rate:.4f}"]
+            )
+    return path
+
+
 if __name__ == "__main__":
     cfg = load_config()
     model = load_model(cfg)
@@ -183,3 +293,24 @@ if __name__ == "__main__":
             f"{scene:<10} {m.n_images:>4} {m.gt:>6} {m.det:>6} {m.tp:>6} "
             f"{m.fp:>6} {m.fn:>6}  {m.recall:>6.1%}  {m.miss_rate:>6.1%}"
         )
+
+    scene_path = write_scene_breakdown(rows)
+    print(f"\n[场景统计] 已写入 {scene_path.relative_to(PROJECT_ROOT)}")
+
+    sweep = sweep_thresholds(model, cfg)
+    csv_path = write_threshold_sweep(sweep)
+    print(f"\n[阈值扫描] 已写入 {csv_path.relative_to(PROJECT_ROOT)}（{len(sweep)} 档）")
+    print("阈值   检测   检出   误检   漏检   检出率   精确率")
+    for thr, m in sweep:
+        print(
+            f"{thr:>4.2f} {m.det:>6} {m.tp:>6} {m.fp:>6} {m.fn:>6}  "
+            f"{m.recall:>6.1%}  {m.precision:>6.1%}"
+        )
+
+    stats = benchmark_latency(model, list_images(cfg), cfg)
+    bench_path = write_model_benchmark(cfg, stats)
+    print(
+        f"\n[耗时] {Path(cfg['model']['weights']).stem} {stats.total_ms:.1f} ms/张"
+        f"（预处理 {stats.preprocess_ms:.1f} + 推理 {stats.inference_ms:.1f} + "
+        f"后处理 {stats.postprocess_ms:.1f}），已写入 {bench_path.relative_to(PROJECT_ROOT)}"
+    )

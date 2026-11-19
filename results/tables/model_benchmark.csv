@@ -1,0 +1,3 @@
+﻿model,source,device,imgsz,n_images,warmup,preprocess_ms,inference_ms,postprocess_ms,total_ms,note
+yolov8n,self,CPU,640,20,3,2.4,113.9,1.2,117.5,"本机 PyTorch CPU 单线程、20 张均值；CPU: Intel64 Family 6 Model 170 Stepping 4, GenuineIntel"
+yolov8s,official,CPU,640,,,,,,128.4,"官方 COCO val, imgsz=640, CPU ONNX，非本机自测；来源 https://docs.ultralytics.com/models/yolov8/；口径不同仅作对照"
