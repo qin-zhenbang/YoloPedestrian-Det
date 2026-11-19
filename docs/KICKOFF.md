@@ -91,4 +91,4 @@ T003 用官方示例图或随手一张临时图；正式图集是 T005，画框�
 
 S2 / S3 卡着后面所有出图和装订，优先做。老师若明确要求训练，再插三件事：整数据、CPU 微调 10–20 epoch、把曲线放进 PPT。
 
-进度：T001、T002、T004、T005、T006 已完成（venv + requirements.txt + yolov8n.pt + exp.yaml 已冻结 + 40 张五场景图集与 SOURCES.md + labels.csv 40 行真值）；T003 冒烟待补，T007 起未开始。
+进度：T001、T002、T004、T005、T006、T007 已完成（venv + requirements.txt + yolov8n.pt + exp.yaml 已冻结 + 40 张五场景图集与 SOURCES.md + labels.csv 40 行真值 + detector.py 单图推理）；T003 冒烟待补，T008 起未开始。
