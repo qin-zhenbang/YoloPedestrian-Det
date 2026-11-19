@@ -1,0 +1,38 @@
+# 行人检测实验参数（T009：写好后冻结，不再改动）
+# 所有脚本只从这里读参数，不要在代码里写死。
+
+model:
+  weights: weights/yolov8n.pt   # 预置权重路径
+  device: cpu                    # 只用 CPU
+  classes: [0]                   # COCO 类别 0 = person，只检测行人
+
+inference:
+  imgsz: 640                     # 推理输入尺寸
+  iou: 0.45                      # NMS IoU 阈值
+  conf: 0.25                     # 默认置信度阈值（阈值扫描时以此为中心，见 threshold_sweep）
+
+# 阈值扫描：conf 从 0.05 到 0.90，步进 0.05，共 18 档（T015）
+threshold_sweep:
+  start: 0.05
+  stop: 0.90
+  step: 0.05
+
+# 数据分组（T006/T007）：五场景，每组 >= 6 张，全英文无空格命名
+data:
+  samples_dir: data/samples
+  labels_csv: data/labels.csv
+  scenes: [day, night, occlusion, crowd, small]
+  image_ext: [.jpg, .jpeg, .png]
+
+# 输出目录
+output:
+  results_dir: results
+  tables_dir: results/tables
+  figures_dir: results/figures
+  detection_samples_dir: results/detection_samples
+
+# 官方 YOLOv8s 数据（T016/T028）：从 ultralytics 官方文档核对后填入，并在 metrics_note 标明出处与条件
+reference:
+  official_yolov8s_cpu_ms: null    # 例：填官方 CPU ONNX 推理耗时数值
+  official_source_url: null        # 例：https://docs.ultralytics.com/models/yolov8/#performance-tables
+  official_condition: null         # 例：CPU ONNX, imgsz=640, includes preprocessing+inference+NMS
