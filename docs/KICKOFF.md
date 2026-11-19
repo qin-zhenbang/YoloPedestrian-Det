@@ -89,6 +89,8 @@ T003 用官方示例图或随手一张临时图；正式图集是 T005，画框�
 | T023 | 计时彩排 | 实测 ≤ 7 分钟 |
 | T024 | 逐页核对图 / 表 / 数字齐全且说得出来源 | 复核记录 |
 
+交付说明：汇报 PPT 只在本地使用，不提交 GitHub；仓库只保留代码、数据、图表和文档（`*.pptx` 已在 `.gitignore` 中忽略）。
+
 S2 / S3 卡着后面所有出图和装订，优先做。老师若明确要求训练，再插三件事：整数据、CPU 微调 10–20 epoch、把曲线放进 PPT。
 
-进度：T001、T002、T004、T005、T006、T007、T008、T009、T010、T011、T012、T013、T014、T015、T016、T017、T018、T019 已完成（venv + requirements.txt + yolov8n.pt + exp.yaml 已冻结 + 40 张五场景图集与 SOURCES.md + labels.csv 40 行真值 + detector.py 单图/批量推理与计时自测 + evaluate.py 检出/误检/漏检统计 + 三份结果 CSV + docs/metrics_note.md 口径说明与复核记录 + visualize.py 统一风格与画框、detection_samples 五张样图与八张失败案例、grid_overview.png 四宫格、threshold_pr_curve.png 阈值双线图、latency_compare.png 耗时对比图、scene_miss_rate.png 场景漏检柱状图、docs/figure_check.md 图件检查记录）；T003 冒烟待补，T020 起未开始。
+进度：T001、T002、T004、T005、T006、T007、T008、T009、T010、T011、T012、T013、T014、T015、T016、T017、T018、T019、T020 已完成（venv + requirements.txt + yolov8n.pt + exp.yaml 已冻结 + 40 张五场景图集与 SOURCES.md + labels.csv 40 行真值 + detector.py 单图/批量推理与计时自测 + evaluate.py 检出/误检/漏检统计 + 三份结果 CSV + docs/metrics_note.md 口径说明与复核记录 + visualize.py 统一风格与画框、detection_samples 五张样图与八张失败案例、grid_overview.png 四宫格、threshold_pr_curve.png 阈值双线图、latency_compare.png 耗时对比图、scene_miss_rate.png 场景漏检柱状图、docs/figure_check.md 图件检查记录、docs/references.md 引用标注清单）；T003 冒烟已由 T007/T008 自测覆盖；T021 汇报稿不纳入仓库；T022–T024 依赖 PPT，暂缓。

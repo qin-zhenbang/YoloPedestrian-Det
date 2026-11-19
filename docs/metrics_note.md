@@ -51,7 +51,7 @@
 - 只统计 `results[0].speed` 的 preprocess + inference + postprocess，不含读图、画框、写 CSV。
 - 预热 3 张不计，正式 20 张取均值，`torch.set_num_threads(1)`，测完恢复原线程数。
 - 本机结果：yolov8n 约 110.8–117.5 ms/张；机器负载会影响结果（曾出现 146.9 ms），PPT 引用时注明“本机 CPU 实测”。
-- 官方 yolov8s 128.4 ms 来自 ultralytics 文档的 COCO val / CPU ONNX 口径，**与本机 PyTorch 实测不可直接比较**，只作量级参照。
+- 官方 yolov8s 128.4 ms 来自 ultralytics 文档的 COCO val / CPU ONNX 口径，**与本机 PyTorch 实测不可直接比较**，只作量级参照；官方页面未注明测试 CPU 型号与 ONNX Runtime 版本。
 
 ## 6. 复核记录（2026-11-19）
 

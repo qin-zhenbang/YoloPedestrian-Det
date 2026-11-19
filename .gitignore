@@ -8,5 +8,7 @@ __pycache__/
 !weights/yolov8n.pt
 *.onnx
 runs/
+# 汇报稿只在本地使用，不提交 GitHub
+*.pptx
 .DS_Store
 Thumbs.db
